@@ -5,12 +5,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.htw.dao.utils.ArticleType;
 
 @Entity
 public class Look implements Serializable {
@@ -21,29 +23,49 @@ public class Look implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false)
+	// @Column(nullable = false)
 	private String img;
 
-	@OneToMany(mappedBy = "article")
-	private Set<LookArticles> articles = new HashSet<LookArticles>();
+	@OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+	private Set<LookArticles> lookArticles = new HashSet<LookArticles>();
 
 	private Date dateCreate;
 
 	public Look() {
 	}
 
-	public Look(Integer id, String img, Date dateCreate) {
-		this.id = id;
-		this.img = img;
-		this.dateCreate = dateCreate;
-	}
-
-	public Look(Integer id, String img, Set<LookArticles> articles, Date dateCreate) {
+	public Look(Integer id, String img, Set<LookArticles> lookArticles, Date dateCreate) {
 		super();
 		this.id = id;
 		this.img = img;
-		this.articles = articles;
+		this.lookArticles = lookArticles;
 		this.dateCreate = dateCreate;
+	}
+
+	public Look(String img, Set<LookArticles> lookArticles, Date dateCreate) {
+		super();
+		this.img = img;
+		this.lookArticles = lookArticles;
+		this.dateCreate = dateCreate;
+	}
+
+	public Look(String img, Date dateCreate) {
+		super();
+		this.img = img;
+		this.lookArticles = lookArticles;
+		this.dateCreate = dateCreate;
+	}
+
+	public void addArticle(Article article, ArticleType articleType, Integer position) {
+		LookArticles lookArticle = new LookArticles();
+		lookArticle.setLook(this);
+		lookArticle.setArticle(article);
+		lookArticle.setArticleType(articleType);
+		lookArticle.setPosition(position);
+		if (article.getLooksArticle() == null)
+			article.setLooksArticle(new HashSet<>());
+		article.getLooksArticle().add(lookArticle);
+		this.lookArticles.add(lookArticle);
 	}
 
 	public Integer getId() {
@@ -62,12 +84,12 @@ public class Look implements Serializable {
 		this.img = img;
 	}
 
-	public Set<LookArticles> getArticles() {
-		return articles;
+	public Set<LookArticles> getLookArticles() {
+		return lookArticles;
 	}
 
-	public void setArticles(Set<LookArticles> articles) {
-		this.articles = articles;
+	public void setLookArticles(Set<LookArticles> lookArticles) {
+		this.lookArticles = lookArticles;
 	}
 
 	public Date getDateCreate() {

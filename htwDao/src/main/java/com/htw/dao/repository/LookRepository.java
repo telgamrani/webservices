@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.htw.dao.model.Look;
 
-public interface LookRepository extends JpaRepository<Look, Long> {
+public interface LookRepository extends JpaRepository<Look, Integer> {
 
 }

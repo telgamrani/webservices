@@ -19,7 +19,7 @@ public class LookArticles implements Serializable {
 	private static final long serialVersionUID = -5579131590220724587L;
 
 	@EmbeddedId
-	private LookArticlesPK id;
+	private LookArticlesPK id = new LookArticlesPK();
 
 	@ManyToOne
 	@MapsId("lookId")
@@ -37,6 +37,16 @@ public class LookArticles implements Serializable {
 
 	@Column(nullable = false)
 	private Integer position;
+
+	public LookArticles() {
+	}
+
+	public LookArticles(Look look, Article article, ArticleType articleType, Integer position) {
+		this.look = look;
+		this.article = article;
+		this.articleType = articleType;
+		this.position = position;
+	}
 
 	public LookArticlesPK getId() {
 		return id;

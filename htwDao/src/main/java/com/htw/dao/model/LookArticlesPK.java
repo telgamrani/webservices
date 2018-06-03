@@ -16,4 +16,23 @@ public class LookArticlesPK implements Serializable {
 	@Column(name = "article_id")
 	private Integer articleId;
 
+	public LookArticlesPK() {
+	}
+
+	public Integer getLookId() {
+		return lookId;
+	}
+
+	public void setLookId(Integer lookId) {
+		this.lookId = lookId;
+	}
+
+	public Integer getArticleId() {
+		return articleId;
+	}
+
+	public void setArticleId(Integer articleId) {
+		this.articleId = articleId;
+	}
+
 }

@@ -30,27 +30,29 @@ public class Article implements Serializable {
 	private String shoppingUrl;
 
 	@OneToMany(mappedBy = "look")
-	private Set<LookArticles> looks = new HashSet<LookArticles>();
+	private Set<LookArticles> looksArticle = new HashSet<LookArticles>();
 
 	public Article() {
 	}
 
-	public Article(Integer id, String img, Double price, String shoppingUrl) {
+	public Article(Integer id, String img, Double price, String shoppingUrl, Set<LookArticles> looksArticle) {
 		super();
 		this.id = id;
 		this.img = img;
 		this.price = price;
 		this.shoppingUrl = shoppingUrl;
+		this.looksArticle = looksArticle;
 	}
 
-	public Article(Integer id, String img, Double price, String shoppingUrl, Set<LookArticles> looks) {
+	public Article(String img, Double price, String shoppingUrl, Set<LookArticles> looks) {
 		super();
-		this.id = id;
 		this.img = img;
 		this.price = price;
 		this.shoppingUrl = shoppingUrl;
-		this.looks = looks;
+		this.looksArticle = looks;
 	}
+
+
 
 	public Integer getId() {
 		return id;
@@ -84,12 +86,12 @@ public class Article implements Serializable {
 		this.shoppingUrl = shoppingUrl;
 	}
 
-	public Set<LookArticles> getLooks() {
-		return looks;
+	public Set<LookArticles> getLooksArticle() {
+		return looksArticle;
 	}
 
-	public void setLooks(Set<LookArticles> looks) {
-		this.looks = looks;
+	public void setLooksArticle(Set<LookArticles> looksArticle) {
+		this.looksArticle = looksArticle;
 	}
 
 }
