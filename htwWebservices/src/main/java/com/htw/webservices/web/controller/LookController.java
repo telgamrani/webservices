@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.htw.webservices.model.Look;
+import com.htw.dao.model.Look;
 
 @RestController
 public class LookController {
