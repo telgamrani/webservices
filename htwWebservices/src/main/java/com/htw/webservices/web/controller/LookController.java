@@ -9,6 +9,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.htw.dao.model.Article;
@@ -33,18 +35,6 @@ public class LookController {
 		lookRepository.save(_look);
 	}
 
-	@GetMapping(value = "/looks/{currentPage}/{numPerPage}")
-	public List<LookJson> getLooks(@PathVariable int currentPage, @PathVariable int numPerPage) {
-		System.out.println("/looks/{" + currentPage + "}/{" + numPerPage + "}");
-
-		List<Look> looks = lookRepository.findAll();
-		List<LookJson> looksJson = new ArrayList<LookJson>();
-		looks.forEach(l -> {
-			looksJson.add(l.convertToJson());
-		});
-		return looksJson;
-	}
-
 	@GetMapping(value = "/looks/{id}")
 	public LookJson getLookById(@PathVariable int id) {
 		System.out.println("/looks/{" + id + "}");
@@ -56,6 +46,30 @@ public class LookController {
 		}
 		
 		return lookJson;
+	}
+
+	@PostMapping(value = "/looks")
+	public LookJson addLook(@RequestBody LookJson lookJson) {
+		Look look = null;
+		try {
+			look = lookJson.convertToDao();
+			look = lookRepository.save(look);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return look.convertToJson();
+	}
+
+	@GetMapping(value = "/looks/{currentPage}/{numPerPage}")
+	public List<LookJson> getLooks(@PathVariable int currentPage, @PathVariable int numPerPage) {
+		System.out.println("/looks/{" + currentPage + "}/{" + numPerPage + "}");
+
+		List<Look> looks = lookRepository.findAll();
+		List<LookJson> looksJson = new ArrayList<LookJson>();
+		looks.forEach(l -> {
+			looksJson.add(l.convertToJson());
+		});
+		return looksJson;
 	}
 
 }

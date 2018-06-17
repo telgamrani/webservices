@@ -1,6 +1,7 @@
 package com.htw.dao.model.json;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.htw.dao.model.Look;
@@ -19,6 +20,7 @@ public class LookJson {
 		Look look = new Look();
 		look.setId(this.getId());
 		look.setImgUrl(this.getImgUrl());
+		look.setDateCreate(new Date());
 		this.principalArticles.forEach(a -> {
 			look.addArticle(a.convertToDao(), a.getArticleType(), a.getPosition());
 		});
