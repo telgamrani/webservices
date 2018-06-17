@@ -1,15 +1,18 @@
 package com.htw.dao.model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.htw.dao.model.json.ArticleJson;
 
 @Entity
 public class Article implements Serializable {
@@ -21,7 +24,7 @@ public class Article implements Serializable {
 	private Integer id;
 
 	@Column(nullable = false)
-	private String img;
+	private String imgUrl;
 
 	@Column(nullable = false)
 	private Double price;
@@ -29,30 +32,51 @@ public class Article implements Serializable {
 	@Column(nullable = false)
 	private String shoppingUrl;
 
-	@OneToMany(mappedBy = "look")
-	private Set<LookArticles> looksArticle = new HashSet<LookArticles>();
+	@OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+	private List<LookArticles> looks = new ArrayList<LookArticles>();
 
 	public Article() {
 	}
 
-	public Article(Integer id, String img, Double price, String shoppingUrl, Set<LookArticles> looksArticle) {
-		super();
-		this.id = id;
-		this.img = img;
+	public Article(String imgUrl, Double price, String shoppingUrl) {
+		this.imgUrl = imgUrl;
 		this.price = price;
 		this.shoppingUrl = shoppingUrl;
-		this.looksArticle = looksArticle;
 	}
 
-	public Article(String img, Double price, String shoppingUrl, Set<LookArticles> looks) {
-		super();
-		this.img = img;
-		this.price = price;
-		this.shoppingUrl = shoppingUrl;
-		this.looksArticle = looks;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Article other = (Article) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 
+	public ArticleJson convertToJson() {
+		ArticleJson articleJson = new ArticleJson();
+		articleJson.setId(this.getId());
+		articleJson.setImgUrl(this.getImgUrl());
+		articleJson.setPrice(this.getPrice());
+		articleJson.setShoppingUrl(this.getShoppingUrl());
+		return articleJson;
+	}
 
 	public Integer getId() {
 		return id;
@@ -62,12 +86,16 @@ public class Article implements Serializable {
 		this.id = id;
 	}
 
-	public String getImg() {
-		return img;
+	public String getImgUrl() {
+		return imgUrl;
 	}
 
-	public void setImg(String img) {
-		this.img = img;
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 	public Double getPrice() {
@@ -86,12 +114,13 @@ public class Article implements Serializable {
 		this.shoppingUrl = shoppingUrl;
 	}
 
-	public Set<LookArticles> getLooksArticle() {
-		return looksArticle;
+	public List<LookArticles> getLooks() {
+		return looks;
 	}
 
-	public void setLooksArticle(Set<LookArticles> looksArticle) {
-		this.looksArticle = looksArticle;
+	public void setLooks(List<LookArticles> looks) {
+		this.looks = looks;
 	}
+
 
 }

@@ -1,9 +1,9 @@
 package com.htw.dao.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -12,6 +12,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Where;
+
+import com.htw.dao.model.json.ArticleJson;
+import com.htw.dao.model.json.LookJson;
 import com.htw.dao.utils.ArticleType;
 
 @Entity
@@ -24,48 +28,82 @@ public class Look implements Serializable {
 	private Integer id;
 
 	// @Column(nullable = false)
-	private String img;
+	private String imgUrl;
 
-	@OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-	private Set<LookArticles> lookArticles = new HashSet<LookArticles>();
+	@OneToMany(mappedBy = "look", cascade = CascadeType.ALL)
+	@Where(clause = "article_type like 'PRINCIPAL'")
+	private List<LookArticles> principalArticles = new ArrayList<LookArticles>();
+
+	@OneToMany(mappedBy = "look", cascade = CascadeType.ALL)
+	@Where(clause = "article_type like 'SECONDARY'")
+	private List<LookArticles> moreArticles = new ArrayList<LookArticles>();
 
 	private Date dateCreate;
 
 	public Look() {
 	}
 
-	public Look(Integer id, String img, Set<LookArticles> lookArticles, Date dateCreate) {
-		super();
-		this.id = id;
-		this.img = img;
-		this.lookArticles = lookArticles;
+	public Look(String imgUrl, Date dateCreate) {
+		this.imgUrl = imgUrl;
 		this.dateCreate = dateCreate;
 	}
 
-	public Look(String img, Set<LookArticles> lookArticles, Date dateCreate) {
-		super();
-		this.img = img;
-		this.lookArticles = lookArticles;
-		this.dateCreate = dateCreate;
-	}
+	public LookJson convertToJson() {
+		LookJson lookJson = new LookJson();
+		lookJson.setId(this.getId());
+		lookJson.setImgUrl(this.getImgUrl());
+		this.principalArticles.forEach(a -> {
+			ArticleJson articleJson = a.getArticle().convertToJson();
+			articleJson.setPosition(a.getPosition());
+			articleJson.setArticleType(a.getArticleType());
+			lookJson.getPrincipalArticles().add(articleJson);
 
-	public Look(String img, Date dateCreate) {
-		super();
-		this.img = img;
-		this.lookArticles = lookArticles;
-		this.dateCreate = dateCreate;
+		});
+		this.moreArticles.forEach(a -> {
+			ArticleJson articleJson = a.getArticle().convertToJson();
+			articleJson.setPosition(a.getPosition());
+			articleJson.setArticleType(a.getArticleType());
+			lookJson.getMoreArticles().add(articleJson);
+
+		});
+
+		return lookJson;
 	}
 
 	public void addArticle(Article article, ArticleType articleType, Integer position) {
-		LookArticles lookArticle = new LookArticles();
-		lookArticle.setLook(this);
-		lookArticle.setArticle(article);
+		LookArticles lookArticle = new LookArticles(this, article);
 		lookArticle.setArticleType(articleType);
 		lookArticle.setPosition(position);
-		if (article.getLooksArticle() == null)
-			article.setLooksArticle(new HashSet<>());
-		article.getLooksArticle().add(lookArticle);
-		this.lookArticles.add(lookArticle);
+		if(ArticleType.PRINCIPAL.equals(articleType)) {
+			principalArticles.add(lookArticle);
+		}else {
+			moreArticles.add(lookArticle);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Look other = (Look) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 	public Integer getId() {
@@ -76,20 +114,12 @@ public class Look implements Serializable {
 		this.id = id;
 	}
 
-	public String getImg() {
-		return img;
+	public String getImgUrl() {
+		return imgUrl;
 	}
 
-	public void setImg(String img) {
-		this.img = img;
-	}
-
-	public Set<LookArticles> getLookArticles() {
-		return lookArticles;
-	}
-
-	public void setLookArticles(Set<LookArticles> lookArticles) {
-		this.lookArticles = lookArticles;
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
 	}
 
 	public Date getDateCreate() {
@@ -100,4 +130,19 @@ public class Look implements Serializable {
 		this.dateCreate = dateCreate;
 	}
 
+	public List<LookArticles> getPrincipalArticles() {
+		return principalArticles;
+	}
+
+	public void setPrincipalArticles(List<LookArticles> principalArticles) {
+		this.principalArticles = principalArticles;
+	}
+
+	public List<LookArticles> getMoreArticles() {
+		return moreArticles;
+	}
+
+	public void setMoreArticles(List<LookArticles> moreArticles) {
+		this.moreArticles = moreArticles;
+	}
 }

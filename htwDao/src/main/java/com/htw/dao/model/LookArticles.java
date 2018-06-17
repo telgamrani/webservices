@@ -7,7 +7,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
@@ -19,16 +19,14 @@ public class LookArticles implements Serializable {
 	private static final long serialVersionUID = -5579131590220724587L;
 
 	@EmbeddedId
-	private LookArticlesPK id = new LookArticlesPK();
+	private LookArticlesPK id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("lookId")
-	@JoinColumn(name = "look_id")
 	private Look look;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("articleId")
-	@JoinColumn(name = "article_id")
 	private Article article;
 
 	@Column(nullable = false)
@@ -41,11 +39,41 @@ public class LookArticles implements Serializable {
 	public LookArticles() {
 	}
 
-	public LookArticles(Look look, Article article, ArticleType articleType, Integer position) {
+	public LookArticles(Look look, Article article) {
 		this.look = look;
 		this.article = article;
-		this.articleType = articleType;
-		this.position = position;
+		this.id = new LookArticlesPK(look.getId(), article.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((article == null) ? 0 : article.hashCode());
+		result = prime * result + ((look == null) ? 0 : look.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LookArticles other = (LookArticles) obj;
+		if (article == null) {
+			if (other.article != null)
+				return false;
+		} else if (!article.equals(other.article))
+			return false;
+		if (look == null) {
+			if (other.look != null)
+				return false;
+		} else if (!look.equals(other.look))
+			return false;
+		return true;
 	}
 
 	public LookArticlesPK getId() {
@@ -87,5 +115,6 @@ public class LookArticles implements Serializable {
 	public void setPosition(Integer position) {
 		this.position = position;
 	}
+
 
 }
